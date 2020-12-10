@@ -79,7 +79,78 @@ Callback URL. Submit this field if you wish to override your default callback UR
 {% endapi-method-spec %}
 {% endapi-method %}
 
-### Merchant Return or Callback
+## Request Signature
+
+In order to ensure the data integrity of information passing to Riipay, we use electronic signature for validation and verification. The hash algorithm used is **`md5`**.
+
+The signature value is a concatenated string consists of the following fields, in the following order:
+
+* merchant\_code \(provided by Riipay\)
+* Secret Key \(provided by Riipay\)
+* reference
+* currency\_code
+* amount
+
+{% hint style="info" %}
+amount have to be a string of 2 decimals without thousand separator. e.g.: 1234.00
+{% endhint %}
+
+```php
+public function generateSignature($order)
+{
+    //convert order total to a string of 2 decimals with no thousand separator
+    $amount = number_format($order->total, 2, '.', '');
+    $hash = $merchant_code . $secret_key . $order->reference . $order->currency_code . $amount;
+    $signature = md5($hash);
+    return $signature;
+}
+```
+
+## Sample Request
+
+Assume that you receive a new order, and the details are as follows:
+
+| Field | Value |
+| :--- | :--- |
+| merchant\_code | TEST |
+| secret\_key | a1b2c3d4e5f6 |
+| reference | SO20201109-01 |
+| description | Order SO20201109-01: 1 Adidas Sneakers |
+| currency\_code | MYR |
+| amount | 1234.00 |
+| customer\_name | Mr. Lee |
+| customer\_email | lee@testing.com |
+| customer\_phone | 0123456789 |
+| customer\_ip | 123.321.12.123 |
+| signature | _See below._ |
+
+### Generate Signature Value
+
+```php
+$amount = number_format(1234.00, 2, '.', '');
+$hash = 'TEST' . 'a1b2c3d4e5f6' . 'SO20201109-01' . 'MYR' . $amount;
+$signature = md5($hash);
+```
+
+{% hint style="success" %}
+**Signature Output**
+
+759c1d9805ba0f4bf624098a36258cb3
+{% endhint %}
+
+### Send GET request to Riipay
+
+```php
+{{BASE_URL}}/v1/payment?merchant_code=TEST&secret_key=a1b2c3d4e5f6&reference=SO20201109-01&description=Order+SO20201109-01%3A+1+
+Adidas+Sneakers&currency_code=MYR&=amount=1234.00&customer_name=Mr.+Lee&customer_email=lee%40testing.com&customer_phone=01234567
+89&customer_ip=123.321.12.123&signature=759c1d9805ba0f4bf624098a36258cb3
+```
+
+## Payment Response
+
+You will receive payment response from Riipay after payment process. You may decide the form of payment response depends on your settings at Riipay Dashboard. Generally, it can be either GET request, POST x-www-form-urlencoded request or POST JSON request.
+
+### Response Parameters
 
 <table>
   <thead>
@@ -136,33 +207,147 @@ Callback URL. Submit this field if you wish to override your default callback UR
       <td style="text-align:left">status_code</td>
       <td style="text-align:left">string</td>
       <td style="text-align:left">
-        <p>A - Approved</p>
-        <p>S - Success</p>
-        <p>F - Failed</p>
+        <p>Transaction status code.</p>
+        <p>Possible values: <code>F</code> , <code>A</code> , <code>S</code> . See Reference
+          below.</p>
       </td>
     </tr>
     <tr>
       <td style="text-align:left">status_message</td>
       <td style="text-align:left">string</td>
-      <td style="text-align:left">Status description</td>
+      <td style="text-align:left">Transaction status description.</td>
     </tr>
     <tr>
       <td style="text-align:left">error_code</td>
       <td style="text-align:left">string</td>
-      <td style="text-align:left">Error Code</td>
+      <td style="text-align:left">
+        <p>Transaction error code. Empty if not applicable. See</p>
+        <p>Reference below.</p>
+      </td>
     </tr>
     <tr>
       <td style="text-align:left">error_message</td>
       <td style="text-align:left">string</td>
-      <td style="text-align:left">Error Message</td>
+      <td style="text-align:left">Transaction error message. Empty if not applicable.</td>
     </tr>
     <tr>
       <td style="text-align:left">signature</td>
       <td style="text-align:left">string</td>
-      <td style="text-align:left">Response signature</td>
+      <td style="text-align:left">Electronic signature. See Response Signature.</td>
     </tr>
   </tbody>
 </table>
 
+### Response Status Code
 
+| Code | Description | Note |
+| :--- | :--- | :--- |
+| F | Failed | Transaction is failed |
+| A | Accepted | Transaction has been received and is under process. |
+| S | Success | Transaction is successful. |
+
+### Response Error Code
+
+| Code | Description |
+| :--- | :--- |
+| 400 | Invalid Request Parameter |
+| 401 | Invalid Signature |
+| 402 | Merchant Limit Exceeded |
+| 403 | status\_codestatus\_codestatus\_codeUser Limit Exceeded |
+| 404 | Invalid Merchant Code |
+| 405 | Payment not Allowed |
+| 406 | Payment Expired |
+| 409 | Invalid Session |
+| 410 | Cancelled by Customer |
+| 412 | Merchant Invalid Callback |
+| 422 | Payment Failed |
+| 500 | Server Error |
+| 501 | Failed to Initialize |
+| 502 | Gateway Request Error |
+| 503 | Gateway Response Error |
+| 504 | Gateway Signature Error |
+
+## Response Signature
+
+In order to ensure the data integrity of information passing from Riipay to you, we use electronic signature for validation and verification. The hash algorithm used is `md5`.
+
+The signature value is a concatenated string consists of the following fields, in the following order:
+
+* Merchant Code \(provided by Riipay\)
+* Secret Key \(provided by Riipay\)
+* reference
+* currency\_code
+* amount
+* transaction\_reference
+* status\_code
+
+{% hint style="info" %}
+amount have to be a string of 2 decimals without thousand separator. e.g.: 1234.00
+{% endhint %}
+
+It is a good practice to always make sure the signature you generate matches the signature retrieved from Riipay response before you proceed with the response data.
+
+```php
+public function isResponseValid($response)
+{
+    $reference = $response['reference'];
+    $currency_code = $response['currency_code'];
+    
+    //convert amount to a string of 2 decimals with no thousand separator
+    $amount = number_format($response['amount'], 2, '.', '');
+    $transaction_reference = $response['transaction_reference'];
+    $status_code = $response['status_code'];
+    
+    $hash = $merchant_code . $secret_key . $reference . $currency_code . $amount . $transaction_reference . $status_code;
+    $signature = md5($hash);
+    
+    return $signature === $response['signature'];
+}
+```
+
+## Sample Response
+
+In this guide, we will demonstrate payment response in POST JSON format.
+
+```javascript
+{
+    "merchant_code": "TEST",
+    "reference": "SO20201109-01",
+    "description": "Payment for order SO20201109-01",
+    "currency_code": "MYR",
+    "amount": 1234,
+    "transaction_reference": "RP-20201109-ABCDEFGH",
+    "transaction_datetime": "",
+    "status_code": "F",
+    "status_message": "Failed",
+    "error_code": "405",
+    "error_message": "User Limit Exceeded",
+    "signature": "fe3c5fb7596fec4afeadd05abe4316ff"
+}
+```
+
+Assume secret key is the same as our payment request sample a1b2c3d4e5. Response signature can be generated as follows:
+
+```javascript
+//retrieve raw data from JSON POST request
+$json = file_get_contents('php://input');
+//convert into PHP object
+$response = json_decode($json);
+$reference = $response['reference'];
+$currency_code = $response['currency_code'];
+//convert amount to a string of 2 decimals with no thousand separator
+$amount = number_format($response['amount'], 2, '.', '');
+$transaction_reference = $response['transaction_reference'];
+$status_code = $response['status_code'];
+$hash = $merchant_code . $secret_key . $reference . $currency_code . $amount . $transaction_reference . $status_code;
+$signature = md5($hash);
+```
+
+{% hint style="success" %}
+**For demonstration, the signature output would be**
+
+fe3c5fb7596fec4afeadd05abe4316ff
+{% endhint %}
+
+Since the signature we generate is the same as the one in the response data, we can ensure that the response is valid. You may proceed with your own transaction process now.
 
