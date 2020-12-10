@@ -1,11 +1,13 @@
 # Payment Request
 
-{% api-method method="get" host="https://{{BASE\_URL}}" path="/v1/payment" %}
+{% api-method method="get" host="https://secure.riipay.my" path="/v1/payment" %}
 {% api-method-summary %}
 Initiate a payment request
 {% endapi-method-summary %}
 
 {% api-method-description %}
+\*\* For testing, please use `https://secure.uat.riipay.my`  
+  
 This endpoint allows you to initial a new payment request.
 {% endapi-method-description %}
 
