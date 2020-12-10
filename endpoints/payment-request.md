@@ -25,11 +25,12 @@ Your order description
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="currency\_code" type="string" required=true %}
-You order currency code e.g. **MYR**
+Your order currency code e.g. **MYR**
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="amount" type="number" required=true %}
-Total order amount. Format: 2 decimals without thousand separator.  
+Total order amount. Format:  
+2 decimals without thousand separator.  
 eg: 12.00 or 12345.60  
 Minimum 1.00.
 {% endapi-method-parameter %}
@@ -77,6 +78,91 @@ Callback URL. Submit this field if you wish to override your default callback UR
 {% endapi-method-response %}
 {% endapi-method-spec %}
 {% endapi-method %}
+
+### Merchant Return or Callback
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Fields</th>
+      <th style="text-align:left">Type</th>
+      <th style="text-align:left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:left">merchant_code</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Your merchant code</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">reference</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Your order unique reference number. Can be order ID</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">description</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">You order description</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">currency_code</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Your order currency code e.g. <b>MYR</b>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">amount</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">
+        <p>Total order amount. Format:</p>
+        <p>2 decimals without thousand separator.</p>
+        <p>eg: 12.00 or 12345.60</p>
+        <p>Minimum 1.00.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">transaction_reference</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Riipay transaction reference</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">transaction_datetime</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Riipay transaction datetime e.g. <b>2020-11-20 15:32:12</b>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">status_code</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">
+        <p>A - Approved</p>
+        <p>S - Success</p>
+        <p>F - Failed</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">status_message</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Status description</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">error_code</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Error Code</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">error_message</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Error Message</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">signature</td>
+      <td style="text-align:left">string</td>
+      <td style="text-align:left">Response signature</td>
+    </tr>
+  </tbody>
+</table>
 
 
 
