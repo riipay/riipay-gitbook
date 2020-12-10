@@ -62,7 +62,7 @@ Return URL. Submit this field if you wish to override your default return URL in
 {% endapi-method-parameter %}
 
 {% api-method-parameter name="callback\_url" type="string" required=false %}
-Callback URL. Submit this field if you wish to override your default callback URL in dashboard profile settings.
+Callback URL. Submit this field if you wish to override your default callback URL in dashboard profile settings.Yo {
 {% endapi-method-parameter %}
 {% endapi-method-query-parameters %}
 {% endapi-method-request %}
@@ -70,7 +70,7 @@ Callback URL. Submit this field if you wish to override your default callback UR
 {% api-method-response %}
 {% api-method-response-example httpCode=200 %}
 {% api-method-response-example-description %}
-
+You will be redirected to payment page.
 {% endapi-method-response-example-description %}
 
 ```
@@ -80,6 +80,8 @@ Callback URL. Submit this field if you wish to override your default callback UR
 {% endapi-method-response %}
 {% endapi-method-spec %}
 {% endapi-method %}
+
+![Your customer will be redirect to Riipay secure payment portal](../.gitbook/assets/selection_914.png)
 
 ## Request Signature
 
@@ -124,7 +126,7 @@ Assume that you receive a new order, and the details are as follows:
 | customer\_email | lee@testing.com |
 | customer\_phone | 0123456789 |
 | customer\_ip | 123.321.12.123 |
-| signature | _See below._ |
+| signature | \_\_[_See below._](payment-request.md#request-signature) |
 
 ### Generate Signature Value
 
@@ -235,7 +237,8 @@ You will receive payment response from Riipay after payment process. You may dec
     <tr>
       <td style="text-align:left">signature</td>
       <td style="text-align:left">string</td>
-      <td style="text-align:left">Electronic signature. See Response Signature.</td>
+      <td style="text-align:left">Electronic signature. <a href="payment-request.md#response-signature">See Response Signature.</a>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -255,7 +258,7 @@ You will receive payment response from Riipay after payment process. You may dec
 | 400 | Invalid Request Parameter |
 | 401 | Invalid Signature |
 | 402 | Merchant Limit Exceeded |
-| 403 | status\_codestatus\_codestatus\_codeUser Limit Exceeded |
+| 403 | User Limit Exceeded |
 | 404 | Invalid Merchant Code |
 | 405 | Payment not Allowed |
 | 406 | Payment Expired |
