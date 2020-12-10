@@ -6,4 +6,5 @@
 ## Endpoints
 
 * [Payment Request](endpoints/payment-request.md)
+* [Transaction Requery](endpoints/transaction-requery.md)
 
