@@ -152,7 +152,17 @@ Adidas+Sneakers&currency_code=MYR&=amount=1234.00&customer_name=Mr.+Lee&customer
 
 ## Payment Response
 
-You will receive payment response from Riipay after payment process. You may decide the form of payment response depends on your settings at Riipay Dashboard. Generally, it can be either GET request, POST x-www-form-urlencoded request or POST JSON request.
+You will receive payment response from Riipay after payment requested or processed.
+
+There are 2 response types, one is **Client-to-Server Return** \(Return URL\), another is **Server-to-Server Callback** \(Callback URL\).  
+  
+For **Client-to-Server Return**, there will be only **GET** request with query parameters, and it may fail depend on client network or device.  
+  
+For **Server-to-Server Callback**, you may decide the form of payment response depends on your settings at Riipay Merchant Portal. Generally, it can be either **GET** request with query parameters, **POST** **x-www-form-urlencoded** request or **POST** **JSON** request.
+
+{% hint style="info" %}
+Please take note, only completed transaction with "success" or "failed" status from gateway will have "callback" event. for case when there is no attempt to make payment, e.g. "Customer Cancel", or "Invalid Signature", there will be no **Server-to-Server Callback**, just **Client-to-Server Return**
+{% endhint %}
 
 ### Response Parameters
 
