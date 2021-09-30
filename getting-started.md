@@ -11,8 +11,8 @@ Merchant dashboard login credentials will be provided after successful registrat
 
 Based on the environment you are using, you can visit the dashboard through the links:
 
-* **Staging dashboard** `https://merchant.uat.riipay.my`
-* **Production dashboard** `https://merchant.riipay.my`
+* **Staging dashboard** [`https://merchant.uat.riipay.my`](https://merchant.uat.riipay.my)
+* **Production dashboard** [`https://merchant.riipay.my`](https://merchant.riipay.my)
 
 ## Configure Merchant Portal
 
